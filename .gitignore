@@ -1,0 +1,21 @@
+# Dependências do Node.js
+node_modules/
+
+# Arquivos de ambiente e senhas
+.env
+.env.*
+
+# Logs
+*.log
+
+# Arquivos temporários e backups
+*.tmp
+*.bak
+
+# Configurações do VS Code
+.vscode/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini

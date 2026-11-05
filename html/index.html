@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <title>SuperMarket</title>
 </head>
 
@@ -13,18 +12,21 @@
     <!-- LOGIN -->
     <div class="cadastro">
 
-        <!-- LOGO -->
-
         <h1>Bem-vindo!</h1>
         <p>Faça seu login para continuar</p>
 
-        <input type="text" id="email" placeholder="Seu email">
-        <input type="text" id="cpf" placeholder="Seu CPF">
-        <button type="button" href="funcionario.html">Entrar</button>
+        <form id="formLogin">
+            <input type="text" id="nome" placeholder="Seu nome" required>
+            <input type="password" id="senha" placeholder="Sua senha" required>
+
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p id="mensagem"></p>
 
     </div>
 
-    <script src="/script/script.js"></script>
+    <script src="../script/script.js"></script>
 
 </body>
 </html>

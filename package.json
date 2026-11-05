@@ -1,0 +1,26 @@
+{
+  "name": "gestao_de_estoque",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArthurVeeck/Gestao_de_estoque.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ArthurVeeck/Gestao_de_estoque/issues"
+  },
+  "homepage": "https://github.com/ArthurVeeck/Gestao_de_estoque#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.3.0",
+    "mysql2": "^3.24.6"
+  }
+}
