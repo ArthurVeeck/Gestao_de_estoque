@@ -1,241 +1,241 @@
 
-<!DOCTYPE html>
-<html lang="pt-br">
+    <!DOCTYPE html>
+    <html lang="pt-br">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../css/funcionario.css">
+        <link rel="stylesheet" href="../css/funcionario.css">
 
-    <title>SuperMarket - Funcionário</title>
-</head>
+        <title>SuperMarket - Funcionário</title>
+    </head>
 
-<body>
+    <body>
 
-    <!-- MENU LATERAL -->
-    <aside class="menu">
+        <!-- MENU LATERAL -->
+        <aside class="menu">
 
-        <img src="../assets/LogoSuperMarket(Escuro).svg" id="logo" alt="SuperMarket">
+            <img src="../assets/LogoSuperMarket(Escuro).svg" id="logo" alt="SuperMarket">
 
-        <nav>
-            <button class="opcao ativa" data-pagina="produto">
-                Produto
-            </button>
+            <nav>
+                <button class="opcao ativa" data-pagina="produto">
+                    Produto
+                </button>
 
-            <button class="opcao" data-pagina="categoria">
-                Categoria
-            </button>
+                <button class="opcao" data-pagina="categoria">
+                    Categoria
+                </button>
 
-            <button class="opcao" data-pagina="historico">
-                Histórico
-            </button>
-        </nav>
+                <button class="opcao" data-pagina="historico">
+                    Histórico de Produtos
+                </button>
+            </nav>
 
-        <div class="menu-rodape">
-            <p>SuperMarket</p>
-            <span>Sistema de Gestão</span>
-        </div>
-
-    </aside>
-
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="conteudo">
-
-        <!-- PRODUTOS -->
-        <section id="produto" class="pagina ativa">
-
-            <header class="topo">
-                <div>
-                    <h1>Produtos</h1>
-                    <p>Gerencie os produtos do supermercado.</p>
-                </div>
-            </header>
-
-            <!-- FORMULÁRIO DE PRODUTOS -->
-            <div class="painel">
-
-                <h2 id="tituloFormulario">Adicionar Produto</h2>
-
-                <form id="formProduto">
-
-                    <div class="campos">
-
-                        <div class="campo">
-                            <label for="nomeProduto">Nome do produto</label>
-                            <input type="text" id="nomeProduto"
-                                placeholder="Ex: Lata de tomate" required>
-                        </div>
-
-                        <div class="campo">
-                            <label for="categoriaProduto">Categoria</label>
-                            <select id="categoriaProduto" required>
-                                <option value="">Selecione uma categoria</option>
-                            </select>
-                        </div>
-
-                        <div class="campo">
-                            <label for="fornecedorProduto">Fornecedor</label>
-                            <input type="text" id="fornecedorProduto"
-                                placeholder="Nome do fornecedor" required>
-                        </div>
-
-                        <div class="campo">
-                            <label for="codigoBarras">Código de barras</label>
-                            <input type="text" id="codigoBarras"
-                                placeholder="Código de barras">
-                        </div>
-
-                        <div class="campo">
-                            <label for="precoCusto">Preço custo (R$)</label>
-                            <input type="number" id="precoCusto"
-                                placeholder="0,00" min="0" step="0.01" required>
-                        </div>
-
-                        <div class="campo">
-                            <label for="precoVenda">Preço venda (R$)</label>
-                            <input type="number" id="precoVenda"
-                                placeholder="0,00" min="0" step="0.01" required>
-                        </div>
-
-                    </div>
-
-                    <div class="botoes">
-                        <button type="submit" id="btnSalvar">
-                            Adicionar Produto
-                        </button>
-
-                        <button type="button" id="btnCancelar" class="cancelar">
-                            Cancelar
-                        </button>
-                    </div>
-
-                </form>
-
+            <div class="menu-rodape">
+                <p>SuperMarket</p>
+                <span>Sistema de Gestão</span>
             </div>
 
+        </aside>
 
-            <!-- LISTA DE PRODUTOS -->
-            <div class="painel">
 
-                <div class="titulo-lista">
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="conteudo">
+
+            <!-- PRODUTOS -->
+            <section id="produto" class="pagina ativa">
+
+                <header class="topo">
                     <div>
-                        <h2>Produtos cadastrados</h2>
-                        <p>Lista de produtos disponíveis no sistema.</p>
+                        <h1>Produtos</h1>
+                        <p>Gerencie os produtos do supermercado.</p>
                     </div>
+                </header>
 
-                    <span id="totalProdutos">0 produtos</span>
+                <!-- FORMULÁRIO DE PRODUTOS -->
+                <div class="painel">
+
+                    <h2 id="tituloFormulario">Adicionar Produto</h2>
+
+                    <form id="formProduto">
+
+                        <div class="campos">
+
+                            <div class="campo">
+                                <label for="nomeProduto">Nome do produto</label>
+                                <input type="text" id="nomeProduto"
+                                    placeholder="Ex: Lata de tomate" required>
+                            </div>
+
+                            <div class="campo">
+                                <label for="categoriaProduto">Categoria</label>
+                                <select id="categoriaProduto" required>
+                                    <option value="">Selecione uma categoria</option>
+                                </select>
+                            </div>
+
+                            <div class="campo">
+                                <label for="fornecedorProduto">Fornecedor</label>
+                                <input type="text" id="fornecedorProduto"
+                                    placeholder="Nome do fornecedor" required>
+                            </div>
+
+                            <div class="campo">
+                                <label for="codigoBarras">Código de barras</label>
+                                <input type="text" id="codigoBarras"
+                                    placeholder="Código de barras">
+                            </div>
+
+                            <div class="campo">
+                                <label for="precoCusto">Preço custo (R$)</label>
+                                <input type="number" id="precoCusto"
+                                    placeholder="0,00" min="0" step="0.01" required>
+                            </div>
+
+                            <div class="campo">
+                                <label for="precoVenda">Preço venda (R$)</label>
+                                <input type="number" id="precoVenda"
+                                    placeholder="0,00" min="0" step="0.01" required>
+                            </div>
+
+                        </div>
+
+                        <div class="botoes">
+                            <button type="submit" id="btnSalvar">
+                                Adicionar Produto
+                            </button>
+
+                            <button type="button" id="btnCancelar" class="cancelar">
+                                Cancelar
+                            </button>
+                        </div>
+
+                    </form>
+
                 </div>
 
-                <div class="tabela-container">
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Produto</th>
-                                <th>Categoria</th>
-                                <th>Fornecedor</th>
-                                <th>Código</th>
-                                <th>Preço custo</th>
-                                <th>Preço venda</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
+                <!-- LISTA DE PRODUTOS -->
+                <div class="painel">
 
-                        <tbody id="listaProdutos">
-                        </tbody>
-                    </table>
+                    <div class="titulo-lista">
+                        <div>
+                            <h2>Produtos cadastrados</h2>
+                            <p>Lista de produtos disponíveis no sistema.</p>
+                        </div>
 
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- CATEGORIAS -->
-        <section id="categoria" class="pagina">
-
-            <header class="topo">
-                <div>
-                    <h1>Categorias</h1>
-                    <p>Organize as categorias dos produtos.</p>
-                </div>
-            </header>
-
-            <!-- FORMULÁRIO DE CATEGORIAS -->
-            <div class="painel">
-
-                <h2 id="tituloCategoria">Adicionar Categoria</h2>
-
-                <form id="formCategoria">
-
-                    <div class="campo">
-                        <label for="nomeCategoria">Nome da categoria</label>
-                        <input type="text" id="nomeCategoria"
-                            placeholder="Ex: Alimentos" required>
+                        <span id="totalProdutos">0 produtos</span>
                     </div>
 
-                    <div class="botoes">
+                    <div class="tabela-container">
 
-                        <button type="submit" id="btnSalvarCategoria">
-                            Adicionar Categoria
-                        </button>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Categoria</th>
+                                    <th>Fornecedor</th>
+                                    <th>Código</th>
+                                    <th>Preço custo</th>
+                                    <th>Preço venda</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
 
-                        <button type="button" id="btnCancelarCategoria" class="cancelar">
-                            Cancelar
-                        </button>
+                            <tbody id="listaProdutos">
+                            </tbody>
+                        </table>
 
                     </div>
 
-                </form>
+                </div>
 
-            </div>
+            </section>
 
 
-            <!-- LISTA DE CATEGORIAS -->
-            <div class="painel">
+            <!-- CATEGORIAS -->
+            <section id="categoria" class="pagina">
 
-                <div class="titulo-lista">
+                <header class="topo">
                     <div>
-                        <h2>Categorias cadastradas</h2>
-                        <p>Gerencie as categorias existentes.</p>
+                        <h1>Categorias</h1>
+                        <p>Organize as categorias dos produtos.</p>
+                    </div>
+                </header>
+
+                <!-- FORMULÁRIO DE CATEGORIAS -->
+                <div class="painel">
+
+                    <h2 id="tituloCategoria">Adicionar Categoria</h2>
+
+                    <form id="formCategoria">
+
+                        <div class="campo">
+                            <label for="nomeCategoria">Nome da categoria</label>
+                            <input type="text" id="nomeCategoria"
+                                placeholder="Ex: Alimentos" required>
+                        </div>
+
+                        <div class="botoes">
+
+                            <button type="submit" id="btnSalvarCategoria">
+                                Adicionar Categoria
+                            </button>
+
+                            <button type="button" id="btnCancelarCategoria" class="cancelar">
+                                Cancelar
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <!-- LISTA DE CATEGORIAS -->
+                <div class="painel">
+
+                    <div class="titulo-lista">
+                        <div>
+                            <h2>Categorias cadastradas</h2>
+                            <p>Gerencie as categorias existentes.</p>
+                        </div>
+
+                        <span id="totalCategorias">0 categorias</span>
                     </div>
 
-                    <span id="totalCategorias">0 categorias</span>
+                    <div class="lista-categorias" id="listaCategorias">
+                    </div>
+
                 </div>
 
-                <div class="lista-categorias" id="listaCategorias">
+            </section>
+
+
+            <!-- HISTÓRICO -->
+            <section id="historico" class="pagina">
+
+                <header class="topo">
+                    <div>
+                        <h1>Histórico</h1>
+                        <p>Acompanhe as movimentações do supermercado.</p>
+                    </div>
+                </header>
+
+                <div class="painel">
+                    <h2>Histórico de movimentações</h2>
+                    <p class="mensagem-vazia">
+                        Esta funcionalidade será adicionada posteriormente.
+                    </p>
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </main>
 
+        <script src="../script/funcionario.js"></script>
 
-        <!-- HISTÓRICO -->
-        <section id="historico" class="pagina">
-
-            <header class="topo">
-                <div>
-                    <h1>Histórico</h1>
-                    <p>Acompanhe as movimentações do supermercado.</p>
-                </div>
-            </header>
-
-            <div class="painel">
-                <h2>Histórico de movimentações</h2>
-                <p class="mensagem-vazia">
-                    Esta funcionalidade será adicionada posteriormente.
-                </p>
-            </div>
-
-        </section>
-
-    </main>
-
-    <script src="../script/funcionario.js"></script>
-
-</body>
-</html>
+    </body>
+    </html>
