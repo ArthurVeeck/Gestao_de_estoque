@@ -1,23 +1,22 @@
-
 const formLogin = document.getElementById("formLogin");
 
 formLogin.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const nome = document.getElementById("nome").value;
+    const nome = document.getElementById("nome").value.trim();
     const senha = document.getElementById("senha").value;
     const mensagem = document.getElementById("mensagem");
+
+    mensagem.textContent = "";
 
     try {
 
         const resposta = await fetch("/login", {
             method: "POST",
-
             headers: {
                 "Content-Type": "application/json"
             },
-
             body: JSON.stringify({
                 nome: nome,
                 senha: senha
@@ -31,10 +30,13 @@ formLogin.addEventListener("submit", async function(event) {
             return;
         }
 
+        // Guarda o usuário para o gerente.js / funcionario.js
+        localStorage.setItem("usuarioLogado", JSON.stringify(dados));
+
         if (dados.gerente) {
-            window.location.href = "gerente.html";
+            window.location.href = "/html/gerente.html";
         } else {
-            window.location.href = "funcionario.html";
+            window.location.href = "/html/funcionario.html";
         }
 
     } catch (erro) {

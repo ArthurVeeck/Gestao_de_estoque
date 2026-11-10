@@ -1,0 +1,48 @@
+/* Complementa o funcionario.css */
+
+/* BOTÃO SAIR */
+.btn-sair {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #9e2929;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-sair:hover {
+    background-color: #c03939;
+}
+
+/* TOTAIS DAS LISTAS */
+.titulo-lista > p {
+    color: #8fa9ff;
+    font-size: 14px;
+}
+
+/* BOTÕES DE AÇÃO NAS TABELAS (Editar / Excluir) */
+td button {
+    padding: 7px 12px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #243c91;
+    color: white;
+    cursor: pointer;
+}
+
+td button:hover {
+    background-color: #3456c5;
+}
+
+td button:last-child {
+    background-color: #9e2929;
+}
+
+td button:last-child:hover {
+    background-color: #c03939;
+}
