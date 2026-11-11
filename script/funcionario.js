@@ -402,6 +402,7 @@ document.getElementById("formEstoque").addEventListener("submit", async function
         document.getElementById("formEstoque").reset();
 
         await carregarEstoque();
+        await carregarHistorico();
 
     } catch (erro) {
         alert(erro.message);

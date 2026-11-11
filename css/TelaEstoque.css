@@ -1,0 +1,518 @@
+/* ======================================
+   SUPERMARKET - ESTILO DAS TELAS
+   (usado por gerente.html e funcionario.html)
+   ====================================== */
+
+/* ======================================
+   CORES E VARIÁVEIS
+   ====================================== */
+
+:root {
+    --fundo: #000000;
+    --menu: #000316;
+    --painel: #000316;
+    --campo: #171b32;
+
+    --borda: #343951;
+    --borda-painel: #202944;
+
+    --primaria: #243c91;
+    --primaria-hover: #3456c5;
+    --destaque: #4169e1;
+
+    --perigo: #9e2929;
+    --perigo-hover: #c03939;
+
+    --texto: #ffffff;
+    --texto-suave: #a5a5a5;
+    --texto-fraco: #888da3;
+    --texto-label: #c5c9d8;
+    --texto-tabela: #aebbe9;
+    --texto-destaque: #8fa9ff;
+
+    --largura-menu: 240px;
+
+    /* deixa seletores e barras de rolagem nativos no modo escuro */
+    color-scheme: dark;
+}
+
+
+/* ======================================
+   BASE
+   ====================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    scrollbar-color: var(--primaria) var(--fundo);
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--fundo);
+    color: var(--texto);
+    display: flex;
+}
+
+button {
+    font-family: inherit;
+}
+
+/* destaque ao navegar pelo teclado */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--destaque);
+    outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--fundo);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primaria);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primaria-hover);
+}
+
+
+/* ======================================
+   MENU LATERAL
+   ====================================== */
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: var(--largura-menu);
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 25px 15px;
+
+    background-color: var(--menu);
+    border-right: 1px solid var(--primaria);
+
+    overflow-y: auto;
+}
+
+/* o mix-blend-mode esconde o fundo preto da imagem PNG */
+#logo {
+    display: block;
+    width: 150px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 auto 35px;
+    mix-blend-mode: screen;
+}
+
+.menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.opcao {
+    width: 100%;
+    padding: 15px;
+
+    background-color: transparent;
+    color: var(--texto-suave);
+
+    border: none;
+    border-radius: 8px;
+
+    text-align: left;
+    font-size: 16px;
+
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.opcao:hover {
+    background-color: var(--campo);
+    color: var(--texto);
+}
+
+.opcao.ativa {
+    background-color: var(--primaria);
+    color: var(--texto);
+    font-weight: bold;
+}
+
+/* RODAPÉ DO MENU */
+.menu-rodape {
+    margin-top: auto;
+    padding: 15px 5px 0;
+    border-top: 1px solid var(--borda);
+}
+
+.menu-rodape p {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.menu-rodape span {
+    color: var(--texto-fraco);
+    font-size: 12px;
+}
+
+.btn-sair {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+
+    background-color: var(--perigo);
+    color: var(--texto);
+
+    border: none;
+    border-radius: 7px;
+
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-sair:hover {
+    background-color: var(--perigo-hover);
+}
+
+
+/* ======================================
+   CONTEÚDO
+   ====================================== */
+
+.conteudo {
+    width: calc(100% - var(--largura-menu));
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: var(--largura-menu);
+    padding: 35px;
+}
+
+/* só a página ativa aparece */
+.pagina {
+    display: none;
+}
+
+.pagina.ativa {
+    display: block;
+}
+
+.topo {
+    margin-bottom: 30px;
+}
+
+.topo h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.topo p {
+    color: var(--texto-suave);
+}
+
+
+/* ======================================
+   PAINÉIS
+   ====================================== */
+
+.painel {
+    background-color: var(--painel);
+    border: 1px solid var(--borda-painel);
+    border-radius: 12px;
+
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.painel h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+
+/* ======================================
+   FORMULÁRIOS
+   ====================================== */
+
+.campos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 20px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 20px;
+}
+
+.campo label {
+    color: var(--texto-label);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    height: 43px;
+
+    padding: 0 12px;
+
+    background-color: var(--campo);
+    color: var(--texto);
+
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.campo input:focus,
+.campo select:focus {
+    border-color: var(--destaque);
+    box-shadow: 0 0 5px #4169e180;
+}
+
+.campo input::placeholder {
+    color: var(--texto-fraco);
+}
+
+.campo select option {
+    background-color: var(--campo);
+    color: var(--texto);
+}
+
+
+/* ======================================
+   BOTÕES DO FORMULÁRIO
+   ====================================== */
+
+.botoes {
+    display: flex;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.botoes button {
+    min-width: 160px;
+    height: 43px;
+
+    padding: 0 20px;
+
+    background-color: var(--primaria);
+    color: var(--texto);
+
+    border: none;
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.botoes button:hover {
+    background-color: var(--primaria-hover);
+}
+
+/* o botão Cancelar só aparece durante a edição (o JS troca o display) */
+.botoes .cancelar {
+    display: none;
+    background-color: var(--borda);
+}
+
+.botoes .cancelar:hover {
+    background-color: #4a526d;
+}
+
+
+/* ======================================
+   LISTAS E TABELAS
+   ====================================== */
+
+.titulo-lista {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.titulo-lista h2 {
+    margin-bottom: 7px;
+}
+
+.titulo-lista p {
+    color: var(--texto-fraco);
+    font-size: 13px;
+}
+
+/* total de itens, à direita do título */
+.titulo-lista > p {
+    color: var(--texto-destaque);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+thead {
+    background-color: var(--campo);
+}
+
+th {
+    color: var(--texto-tabela);
+    font-size: 13px;
+    text-align: left;
+    padding: 15px 12px;
+}
+
+td {
+    padding: 15px 12px;
+    border-bottom: 1px solid var(--borda-painel);
+    font-size: 13px;
+}
+
+tbody tr:hover {
+    background-color: #10152b;
+}
+
+.mensagem-vazia {
+    color: var(--texto-fraco);
+    padding: 15px 0;
+}
+
+
+/* ======================================
+   BOTÕES DENTRO DAS TABELAS (Editar / Excluir)
+   ====================================== */
+
+td button {
+    padding: 7px 12px;
+    margin-right: 5px;
+
+    background-color: var(--primaria);
+    color: var(--texto);
+
+    border: none;
+    border-radius: 5px;
+
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+td button:hover {
+    background-color: var(--primaria-hover);
+}
+
+/* o último botão da linha (Excluir) fica vermelho */
+td button:not(:only-child):last-child {
+    margin-right: 0;
+    background-color: var(--perigo);
+}
+
+td button:not(:only-child):last-child:hover {
+    background-color: var(--perigo-hover);
+}
+
+
+/* ======================================
+   RESPONSIVIDADE
+   ====================================== */
+
+@media (max-width: 850px) {
+
+    :root {
+        --largura-menu: 180px;
+    }
+
+    .conteudo {
+        padding: 20px;
+    }
+
+    .campos {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 550px) {
+
+    :root {
+        --largura-menu: 110px;
+    }
+
+    .menu {
+        padding: 15px 8px;
+    }
+
+    #logo {
+        width: 90px;
+        height: 60px;
+        margin-bottom: 20px;
+    }
+
+    .opcao {
+        padding: 12px 5px;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .menu-rodape span {
+        display: none;
+    }
+
+    .conteudo {
+        padding: 15px;
+    }
+
+    .painel {
+        padding: 15px;
+    }
+
+    .titulo-lista {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .botoes {
+        flex-direction: column;
+    }
+
+    .botoes button {
+        width: 100%;
+    }
+}

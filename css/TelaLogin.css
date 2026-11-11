@@ -1,0 +1,162 @@
+/* ======================================
+   SUPERMARKET - TELA DE LOGIN
+   ====================================== */
+
+:root {
+    --fundo: #000000;
+    --painel: #000316;
+    --campo: #171b32;
+    --borda: #343951;
+    --primaria: #243c91;
+    --primaria-hover: #3456c5;
+    --destaque: #4169e1;
+    --texto: #ffffff;
+    --texto-suave: #a5a5a5;
+    --texto-fraco: #888da3;
+    --erro: #ff6b6b;
+
+    color-scheme: dark;
+}
+
+
+/* ======================================
+   BASE
+   ====================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--fundo);
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+}
+
+
+/* ======================================
+   CAIXA DE LOGIN
+   ====================================== */
+
+.cadastro {
+    width: 420px;
+    max-width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 40px;
+
+    background-color: var(--painel);
+    border: 1px solid #ffffff20;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px #00000050;
+}
+
+.cadastro h1 {
+    color: var(--texto);
+    font-size: 30px;
+    text-align: center;
+}
+
+.cadastro p {
+    color: var(--texto-suave);
+    text-align: center;
+}
+
+
+/* ======================================
+   FORMULÁRIO
+   ====================================== */
+
+#formLogin {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+#formLogin input {
+    width: 100%;
+    height: 45px;
+
+    padding: 0 15px;
+
+    background-color: var(--campo);
+    color: var(--texto);
+
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+
+    outline: none;
+    font-size: 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#formLogin input:focus {
+    border-color: var(--destaque);
+    box-shadow: 0 0 5px #4169e180;
+}
+
+#formLogin input::placeholder {
+    color: var(--texto-fraco);
+}
+
+#formLogin button {
+    height: 45px;
+
+    background-color: var(--primaria);
+    color: var(--texto);
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s;
+}
+
+#formLogin button:hover {
+    background-color: var(--primaria-hover);
+}
+
+#formLogin button:focus-visible {
+    outline: 2px solid var(--destaque);
+    outline-offset: 2px;
+}
+
+
+/* ======================================
+   MENSAGEM DE ERRO
+   ====================================== */
+
+#mensagem {
+    min-height: 20px;
+    color: var(--erro);
+    font-size: 14px;
+    text-align: center;
+}
+
+
+/* ======================================
+   RESPONSIVIDADE
+   ====================================== */
+
+@media (max-width: 480px) {
+
+    .cadastro {
+        padding: 30px 20px;
+    }
+}
