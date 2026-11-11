@@ -1,78 +1,45 @@
-
 // ======================================
-// DADOS DO SISTEMA
+// CONFIGURAÇÕES
 // ======================================
 
-let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-let categorias = JSON.parse(localStorage.getItem("categorias")) || [];
+const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+let produtos = [];
+let categorias = [];
+let estoque = [];
 
 let produtoEditando = null;
 let categoriaEditando = null;
 
 
 // ======================================
-// ELEMENTOS
+// FUNÇÕES AUXILIARES
 // ======================================
 
-const formProduto = document.getElementById("formProduto");
-const formCategoria = document.getElementById("formCategoria");
+async function requisicao(url, metodo = "GET", dados = null) {
+    const configuracao = {
+        method: metodo,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
 
-const listaProdutos = document.getElementById("listaProdutos");
-const listaCategorias = document.getElementById("listaCategorias");
+    if (dados) {
+        configuracao.body = JSON.stringify(dados);
+    }
 
-const categoriaProduto = document.getElementById("categoriaProduto");
+    const resposta = await fetch(url, configuracao);
+    const resultado = await resposta.json();
 
+    if (!resposta.ok) {
+        throw new Error(resultado.mensagem || "Ocorreu um erro.");
+    }
 
-// ======================================
-// SALVAR DADOS
-// ======================================
-
-function salvarDados() {
-
-    localStorage.setItem("produtos", JSON.stringify(produtos));
-    localStorage.setItem("categorias", JSON.stringify(categorias));
-
+    return resultado;
 }
 
-
-// ======================================
-// NAVEGAÇÃO DO MENU
-// ======================================
-
-const opcoes = document.querySelectorAll(".opcao");
-const paginas = document.querySelectorAll(".pagina");
-
-opcoes.forEach(function(botao) {
-
-    botao.addEventListener("click", function() {
-
-        const paginaSelecionada = botao.dataset.pagina;
-
-        opcoes.forEach(function(opcao) {
-            opcao.classList.remove("ativa");
-        });
-
-        paginas.forEach(function(pagina) {
-            pagina.classList.remove("ativa");
-        });
-
-        botao.classList.add("ativa");
-
-        document.getElementById(paginaSelecionada).classList.add("ativa");
-
-    });
-
-});
-
-
-// ======================================
-// PROTEÇÃO DE TEXTO HTML
-// ======================================
-
 function escapar(texto) {
-
-    return String(texto).replace(/[&<>"']/g, function(caractere) {
-
+    return String(texto ?? "").replace(/[&<>"']/g, function(caractere) {
         return {
             "&": "&amp;",
             "<": "&lt;",
@@ -80,187 +47,261 @@ function escapar(texto) {
             '"': "&quot;",
             "'": "&#039;"
         }[caractere];
-
     });
-
 }
 
-
-// ======================================
-// FORMATAÇÃO DE PREÇOS
-// ======================================
-
-function formatarPreco(valor) {
-
-    return Number(valor).toLocaleString("pt-BR", {
+function dinheiro(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
     });
+}
 
+function obterIdUsuario() {
+    if (!usuarioLogado || !usuarioLogado.id_cadastro) {
+        alert("Não foi possível identificar o usuário. Faça login novamente.");
+        return null;
+    }
+
+    return usuarioLogado.id_cadastro;
 }
 
 
 // ======================================
-// ATUALIZAR LISTA DE CATEGORIAS
+// NAVEGAÇÃO
 // ======================================
 
-function atualizarCategorias() {
+const opcoes = document.querySelectorAll(".opcao");
+const paginas = document.querySelectorAll(".pagina");
 
-    listaCategorias.innerHTML = "";
+opcoes.forEach(function(opcao) {
+    opcao.addEventListener("click", function() {
+        const paginaSelecionada = opcao.dataset.pagina;
 
-    categorias.forEach(function(categoria) {
-
-        listaCategorias.innerHTML += `
-
-            <div class="item-categoria">
-
-                <span>${escapar(categoria.nome)}</span>
-
-                <div>
-                    <button class="acao editar"
-                        data-editar-categoria="${categoria.id}">
-                        Editar
-                    </button>
-
-                    <button class="acao excluir"
-                        data-excluir-categoria="${categoria.id}">
-                        Excluir
-                    </button>
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-    if (categorias.length === 0) {
-
-        listaCategorias.innerHTML = `
-            <p class="mensagem-vazia">
-                Nenhuma categoria cadastrada.
-            </p>
-        `;
-
-    }
-
-    document.getElementById("totalCategorias").innerText =
-        categorias.length + (categorias.length === 1 ? " categoria" : " categorias");
-
-
-    // ATUALIZAR SELECT DOS PRODUTOS
-
-    const categoriaAtual = categoriaProduto.value;
-
-    categoriaProduto.innerHTML = `
-        <option value="">Selecione uma categoria</option>
-    `;
-
-    categorias.forEach(function(categoria) {
-
-        categoriaProduto.innerHTML += `
-            <option value="${escapar(categoria.nome)}">
-                ${escapar(categoria.nome)}
-            </option>
-        `;
-
-    });
-
-    if (categorias.some(c => c.nome === categoriaAtual)) {
-        categoriaProduto.value = categoriaAtual;
-    }
-
-}
-
-
-// ======================================
-// CADASTRAR CATEGORIA
-// ======================================
-
-formCategoria.addEventListener("submit", function(event) {
-
-    event.preventDefault();
-
-    const nome = document.getElementById("nomeCategoria").value.trim();
-
-    if (!nome) {
-        alert("Digite o nome da categoria!");
-        return;
-    }
-
-    // VERIFICAR CATEGORIA REPETIDA
-
-    const repetida = categorias.some(function(categoria) {
-
-        return categoria.nome.toLowerCase() === nome.toLowerCase()
-            && categoria.id !== categoriaEditando;
-
-    });
-
-    if (repetida) {
-        alert("Essa categoria já está cadastrada!");
-        return;
-    }
-
-
-    // EDITAR CATEGORIA
-
-    if (categoriaEditando !== null) {
-
-        const categoriaAntiga = categorias.find(function(categoria) {
-            return categoria.id === categoriaEditando;
+        opcoes.forEach(function(item) {
+            item.classList.remove("ativa");
         });
 
-        if (categoriaAntiga) {
+        paginas.forEach(function(pagina) {
+            pagina.classList.remove("ativa");
+        });
 
-            const nomeAntigo = categoriaAntiga.nome;
+        opcao.classList.add("ativa");
 
-            categoriaAntiga.nome = nome;
+        document.getElementById(paginaSelecionada).classList.add("ativa");
 
-            // ATUALIZAR OS PRODUTOS QUE UTILIZAM A CATEGORIA
-
-            produtos.forEach(function(produto) {
-
-                if (produto.categoria === nomeAntigo) {
-                    produto.categoria = nome;
-                }
-
-            });
-
+        if (paginaSelecionada === "estoque") {
+            carregarEstoque();
         }
-
-        alert("Categoria editada com sucesso!");
-
-    } else {
-
-        // NOVA CATEGORIA
-
-        categorias.push({
-            id: Date.now(),
-            nome: nome
-        });
-
-        alert("Categoria cadastrada com sucesso!");
-
-    }
-
-    cancelarEdicaoCategoria();
-
-    salvarDados();
-    atualizarCategorias();
-    atualizarProdutos();
-
+    });
 });
 
+function sair() {
+    localStorage.removeItem("usuarioLogado");
+    window.location.href = "/";
+}
+
 
 // ======================================
-// EDITAR CATEGORIA
+// PRODUTOS
 // ======================================
+
+async function carregarProdutos() {
+    try {
+        produtos = await requisicao("/produtos");
+
+        const lista = document.getElementById("listaProdutos");
+        const total = document.getElementById("totalProdutos");
+
+        lista.innerHTML = "";
+
+        produtos.forEach(function(produto) {
+            lista.innerHTML += `
+                <tr>
+                    <td>${escapar(produto.nome)}</td>
+                    <td>${escapar(produto.categoria || "Sem categoria")}</td>
+                    <td>${escapar(produto.fornecedor || "Não informado")}</td>
+                    <td>${escapar(produto.codigo_barras || "Não informado")}</td>
+                    <td>${dinheiro(produto.preco_custo)}</td>
+                    <td>${dinheiro(produto.preco_venda)}</td>
+                    <td>
+                        <button onclick="editarProduto(${produto.id_produto})">
+                            Editar
+                        </button>
+
+                        <button onclick="excluirProduto(${produto.id_produto})">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        total.textContent = produtos.length;
+
+        atualizarSelectProdutos();
+
+    } catch (erro) {
+        alert("Erro ao carregar produtos: " + erro.message);
+    }
+}
+
+document.getElementById("formProduto").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const produto = {
+        nome: document.getElementById("nomeProduto").value,
+        categoria: document.getElementById("categoriaProduto").value,
+        fornecedor: document.getElementById("fornecedorProduto").value,
+        codigo_barras: document.getElementById("codigoBarras").value,
+        preco_custo: document.getElementById("precoCusto").value,
+        preco_venda: document.getElementById("precoVenda").value
+    };
+
+    try {
+        if (produtoEditando) {
+            await requisicao("/produtos/" + produtoEditando, "PUT", produto);
+            alert("Produto atualizado!");
+        } else {
+            await requisicao("/produtos", "POST", produto);
+            alert("Produto cadastrado!");
+        }
+
+        cancelarEdicaoProduto();
+        await carregarProdutos();
+        await carregarEstoque();
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+});
+
+function editarProduto(id) {
+    const produto = produtos.find(function(item) {
+        return item.id_produto === id;
+    });
+
+    if (!produto) return;
+
+    produtoEditando = id;
+
+    document.getElementById("tituloFormulario").textContent = "Editar produto";
+    document.getElementById("nomeProduto").value = produto.nome;
+    document.getElementById("categoriaProduto").value = produto.id_categoria || "";
+    document.getElementById("fornecedorProduto").value = produto.fornecedor || "";
+    document.getElementById("codigoBarras").value = produto.codigo_barras || "";
+    document.getElementById("precoCusto").value = produto.preco_custo;
+    document.getElementById("precoVenda").value = produto.preco_venda;
+
+    document.getElementById("btnSalvar").textContent = "Salvar alterações";
+    document.getElementById("btnCancelar").style.display = "block";
+
+    window.scrollTo(0, 0);
+}
+
+function cancelarEdicaoProduto() {
+    produtoEditando = null;
+
+    document.getElementById("formProduto").reset();
+    document.getElementById("tituloFormulario").textContent = "Cadastrar produto";
+    document.getElementById("btnSalvar").textContent = "Salvar produto";
+    document.getElementById("btnCancelar").style.display = "none";
+}
+
+async function excluirProduto(id) {
+    if (!confirm("Deseja realmente excluir este produto?")) return;
+
+    try {
+        await requisicao("/produtos/" + id, "DELETE");
+
+        alert("Produto excluído!");
+
+        await carregarProdutos();
+        await carregarEstoque();
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+
+// ======================================
+// CATEGORIAS
+// ======================================
+
+async function carregarCategorias() {
+    try {
+        categorias = await requisicao("/categorias");
+
+        const lista = document.getElementById("listaCategorias");
+        const total = document.getElementById("totalCategorias");
+        const select = document.getElementById("categoriaProduto");
+
+        lista.innerHTML = "";
+        select.innerHTML = '<option value="">Selecione uma categoria</option>';
+
+        categorias.forEach(function(categoria) {
+            lista.innerHTML += `
+                <tr>
+                    <td>${escapar(categoria.nome)}</td>
+                    <td>
+                        <button onclick="editarCategoria(${categoria.id_categoria})">
+                            Editar
+                        </button>
+
+                        <button onclick="excluirCategoria(${categoria.id_categoria})">
+                            Excluir
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            select.innerHTML += `
+                <option value="${categoria.id_categoria}">
+                    ${escapar(categoria.nome)}
+                </option>
+            `;
+        });
+
+        total.textContent = categorias.length;
+
+    } catch (erro) {
+        alert("Erro ao carregar categorias: " + erro.message);
+    }
+}
+
+document.getElementById("formCategoria").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nomeCategoria").value;
+
+    try {
+        if (categoriaEditando) {
+            await requisicao("/categorias/" + categoriaEditando, "PUT", {
+                nome: nome
+            });
+
+            alert("Categoria atualizada!");
+        } else {
+            await requisicao("/categorias", "POST", {
+                nome: nome
+            });
+
+            alert("Categoria cadastrada!");
+        }
+
+        cancelarEdicaoCategoria();
+        await carregarCategorias();
+        await carregarProdutos();
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+});
 
 function editarCategoria(id) {
-
     const categoria = categorias.find(function(item) {
-        return item.id === id;
+        return item.id_categoria === id;
     });
 
     if (!categoria) return;
@@ -268,369 +309,103 @@ function editarCategoria(id) {
     categoriaEditando = id;
 
     document.getElementById("nomeCategoria").value = categoria.nome;
-
-    document.getElementById("tituloCategoria").innerText = "Editar Categoria";
-
-    document.getElementById("btnSalvarCategoria").innerText = "Salvar Alterações";
-
+    document.getElementById("tituloCategoria").textContent = "Editar categoria";
+    document.getElementById("btnSalvarCategoria").textContent = "Salvar alterações";
     document.getElementById("btnCancelarCategoria").style.display = "block";
-
 }
-
-
-// ======================================
-// CANCELAR EDIÇÃO DE CATEGORIA
-// ======================================
 
 function cancelarEdicaoCategoria() {
-
     categoriaEditando = null;
 
-    formCategoria.reset();
-
-    document.getElementById("tituloCategoria").innerText = "Adicionar Categoria";
-
-    document.getElementById("btnSalvarCategoria").innerText = "Adicionar Categoria";
-
+    document.getElementById("formCategoria").reset();
+    document.getElementById("tituloCategoria").textContent = "Cadastrar categoria";
+    document.getElementById("btnSalvarCategoria").textContent = "Salvar categoria";
     document.getElementById("btnCancelarCategoria").style.display = "none";
-
 }
 
-document.getElementById("btnCancelarCategoria").addEventListener("click", cancelarEdicaoCategoria);
+async function excluirCategoria(id) {
+    if (!confirm("Deseja excluir esta categoria?")) return;
 
+    try {
+        await requisicao("/categorias/" + id, "DELETE");
 
-// ======================================
-// EXCLUIR CATEGORIA
-// ======================================
+        alert("Categoria excluída!");
 
-function excluirCategoria(id) {
+        await carregarCategorias();
+        await carregarProdutos();
 
-    const categoria = categorias.find(function(item) {
-        return item.id === id;
-    });
-
-    if (!categoria) return;
-
-    const emUso = produtos.some(function(produto) {
-        return produto.categoria === categoria.nome;
-    });
-
-    if (emUso) {
-        alert("Não é possível excluir essa categoria, pois existem produtos utilizando ela!");
-        return;
+    } catch (erro) {
+        alert(erro.message);
     }
-
-    if (confirm("Deseja realmente excluir essa categoria?")) {
-
-        categorias = categorias.filter(function(item) {
-            return item.id !== id;
-        });
-
-        salvarDados();
-        atualizarCategorias();
-
-    }
-
 }
 
 
 // ======================================
-// CADASTRAR PRODUTO
+// ESTOQUE
 // ======================================
 
-formProduto.addEventListener("submit", function(event) {
+function atualizarSelectProdutos() {
+    const select = document.getElementById("produtoEstoque");
 
-    event.preventDefault();
-
-    const nome = document.getElementById("nomeProduto").value.trim();
-    const categoria = categoriaProduto.value;
-    const fornecedor = document.getElementById("fornecedorProduto").value.trim();
-    const codigo = document.getElementById("codigoBarras").value.trim();
-    const custo = Number(document.getElementById("precoCusto").value);
-    const venda = Number(document.getElementById("precoVenda").value);
-
-
-    if (categorias.length === 0) {
-        alert("Cadastre uma categoria antes de adicionar produtos!");
-        return;
-    }
-
-    if (!categorias.some(c => c.nome === categoria)) {
-        alert("Selecione uma categoria válida!");
-        return;
-    }
-
-    if (!nome || !fornecedor || !categoria) {
-        alert("Preencha todos os campos obrigatórios!");
-        return;
-    }
-
-    if (codigo && !/^\d+$/.test(codigo)) {
-        alert("O código de barras deve conter somente números!");
-        return;
-    }
-
-    if (!Number.isFinite(custo) || !Number.isFinite(venda) || custo < 0 || venda < 0) {
-        alert("Informe preços válidos!");
-        return;
-    }
-
-
-    // VERIFICAR PRODUTO REPETIDO
-
-    const repetido = produtos.some(function(produto) {
-
-        if (produto.id === produtoEditando) {
-            return false;
-        }
-
-        if (codigo && produto.codigo === codigo) {
-            return true;
-        }
-
-        if (!codigo && !produto.codigo) {
-
-            return produto.nome.toLowerCase() === nome.toLowerCase()
-                && produto.categoria.toLowerCase() === categoria.toLowerCase();
-
-        }
-
-        return false;
-
-    });
-
-    if (repetido) {
-        alert("Esse produto já está cadastrado!");
-        return;
-    }
-
-
-    // OBJETO DO PRODUTO
-
-    const novoProduto = {
-
-        id: produtoEditando !== null ? produtoEditando : Date.now(),
-
-        nome: nome,
-        categoria: categoria,
-        fornecedor: fornecedor,
-        codigo: codigo,
-        custo: custo,
-        venda: venda
-
-    };
-
-
-    // EDITAR PRODUTO
-
-    if (produtoEditando !== null) {
-
-        const indice = produtos.findIndex(function(produto) {
-            return produto.id === produtoEditando;
-        });
-
-        if (indice !== -1) {
-            produtos[indice] = novoProduto;
-        }
-
-        alert("Produto editado com sucesso!");
-
-    } else {
-
-        // ADICIONAR PRODUTO
-
-        produtos.push(novoProduto);
-
-        alert("Produto cadastrado com sucesso!");
-
-    }
-
-    cancelarEdicaoProduto();
-
-    salvarDados();
-    atualizarProdutos();
-
-});
-
-
-// ======================================
-// ATUALIZAR LISTA DE PRODUTOS
-// ======================================
-
-function atualizarProdutos() {
-
-    listaProdutos.innerHTML = "";
+    select.innerHTML = '<option value="">Selecione um produto</option>';
 
     produtos.forEach(function(produto) {
-
-        listaProdutos.innerHTML += `
-
-            <tr>
-
-                <td>${escapar(produto.nome)}</td>
-
-                <td>${escapar(produto.categoria)}</td>
-
-                <td>${escapar(produto.fornecedor)}</td>
-
-                <td>${escapar(produto.codigo || "-")}</td>
-
-                <td>${formatarPreco(produto.custo)}</td>
-
-                <td>${formatarPreco(produto.venda)}</td>
-
-                <td>
-
-                    <button class="acao editar"
-                        data-editar-produto="${produto.id}">
-                        Editar
-                    </button>
-
-                    <button class="acao excluir"
-                        data-excluir-produto="${produto.id}">
-                        Excluir
-                    </button>
-
-                </td>
-
-            </tr>
-
+        select.innerHTML += `
+            <option value="${produto.id_produto}">
+                ${escapar(produto.nome)}
+            </option>
         `;
-
     });
-
-
-    if (produtos.length === 0) {
-
-        listaProdutos.innerHTML = `
-            <tr>
-                <td colspan="7" class="mensagem-vazia">
-                    Nenhum produto cadastrado.
-                </td>
-            </tr>
-        `;
-
-    }
-
-    document.getElementById("totalProdutos").innerText =
-        produtos.length + (produtos.length === 1 ? " produto" : " produtos");
-
 }
 
+async function carregarEstoque() {
+    try {
+        estoque = await requisicao("/estoque");
 
-// ======================================
-// EDITAR PRODUTO
-// ======================================
+        const lista = document.getElementById("listaEstoque");
 
-function editarProduto(id) {
+        lista.innerHTML = "";
 
-    const produto = produtos.find(function(item) {
-        return item.id === id;
-    });
-
-    if (!produto) return;
-
-    produtoEditando = id;
-
-    document.getElementById("nomeProduto").value = produto.nome;
-    categoriaProduto.value = produto.categoria;
-
-    document.getElementById("fornecedorProduto").value = produto.fornecedor;
-    document.getElementById("codigoBarras").value = produto.codigo;
-
-    document.getElementById("precoCusto").value = produto.custo;
-    document.getElementById("precoVenda").value = produto.venda;
-
-    document.getElementById("tituloFormulario").innerText = "Editar Produto";
-
-    document.getElementById("btnSalvar").innerText = "Salvar Alterações";
-
-    document.getElementById("btnCancelar").style.display = "block";
-
-    // VOLTAR PARA A ÁREA DE PRODUTOS
-
-    opcoes.forEach(function(opcao) {
-        opcao.classList.toggle("ativa", opcao.dataset.pagina === "produto");
-    });
-
-    paginas.forEach(function(pagina) {
-        pagina.classList.toggle("ativa", pagina.id === "produto");
-    });
-
-    window.scrollTo(0, 0);
-
-}
-
-
-// ======================================
-// CANCELAR EDIÇÃO DE PRODUTO
-// ======================================
-
-function cancelarEdicaoProduto() {
-
-    produtoEditando = null;
-
-    formProduto.reset();
-
-    document.getElementById("tituloFormulario").innerText = "Adicionar Produto";
-
-    document.getElementById("btnSalvar").innerText = "Adicionar Produto";
-
-    document.getElementById("btnCancelar").style.display = "none";
-
-}
-
-document.getElementById("btnCancelar").addEventListener("click", cancelarEdicaoProduto);
-
-
-// ======================================
-// EXCLUIR PRODUTO
-// ======================================
-
-function excluirProduto(id) {
-
-    if (confirm("Deseja realmente excluir esse produto?")) {
-
-        produtos = produtos.filter(function(produto) {
-            return produto.id !== id;
+        estoque.forEach(function(item) {
+            lista.innerHTML += `
+                <tr>
+                    <td>${escapar(item.nome_item || item.nome)}</td>
+                    <td>${Number(item.quantidade).toLocaleString("pt-BR")}</td>
+                </tr>
+            `;
         });
 
-        if (produtoEditando === id) {
-            cancelarEdicaoProduto();
-        }
-
-        salvarDados();
-        atualizarProdutos();
-
+    } catch (erro) {
+        alert("Erro ao carregar estoque: " + erro.message);
     }
-
 }
 
+document.getElementById("formEstoque").addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-// ======================================
-// CLIQUES NOS BOTÕES DE EDIÇÃO E EXCLUSÃO
-// ======================================
+    const idCadastro = obterIdUsuario();
 
-document.addEventListener("click", function(event) {
+    if (!idCadastro) return;
 
-    const botao = event.target;
+    const dados = {
+        id_produto: document.getElementById("produtoEstoque").value,
+        quantidade: document.getElementById("quantidadeEstoque").value,
+        acao: document.getElementById("acaoEstoque").value,
+        id_cadastro: idCadastro
+    };
 
-    if (botao.dataset.editarProduto) {
-        editarProduto(Number(botao.dataset.editarProduto));
+    try {
+        await requisicao("/estoque/atualizar", "POST", dados);
+
+        alert("Estoque atualizado!");
+
+        document.getElementById("formEstoque").reset();
+
+        await carregarEstoque();
+
+    } catch (erro) {
+        alert(erro.message);
     }
-
-    if (botao.dataset.excluirProduto) {
-        excluirProduto(Number(botao.dataset.excluirProduto));
-    }
-
-    if (botao.dataset.editarCategoria) {
-        editarCategoria(Number(botao.dataset.editarCategoria));
-    }
-
-    if (botao.dataset.excluirCategoria) {
-        excluirCategoria(Number(botao.dataset.excluirCategoria));
-    }
-
 });
 
 
@@ -638,5 +413,16 @@ document.addEventListener("click", function(event) {
 // INICIALIZAÇÃO
 // ======================================
 
-atualizarCategorias();
-atualizarProdutos();
+async function iniciarSistema() {
+    if (!usuarioLogado) {
+        alert("Faça login para continuar.");
+        window.location.href = "/";
+        return;
+    }
+
+    await carregarCategorias();
+    await carregarProdutos();
+    await carregarEstoque();
+}
+
+iniciarSistema();

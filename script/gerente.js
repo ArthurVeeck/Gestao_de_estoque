@@ -472,6 +472,7 @@ async function carregarFuncionarios() {
                     <td>${escapar(funcionario.nome)}</td>
                     <td>${escapar(funcionario.cpf_cnpj || "")}</td>
                     <td>${escapar(funcionario.email || "")}</td>
+                    <td>${funcionario.gerente ? "Gerente" : "Funcionário"}</td>
                     <td>
                         <button onclick="editarFuncionario(${funcionario.id_cadastro})">
                             Editar
@@ -499,8 +500,17 @@ document.getElementById("formFuncionario").addEventListener("submit", async func
         nome: document.getElementById("nomeFuncionario").value,
         cpf_cnpj: document.getElementById("cpfFuncionario").value,
         email: document.getElementById("emailFuncionario").value,
-        senha: document.getElementById("senhaFuncionario").value
+        senha: document.getElementById("senhaFuncionario").value,
+
+        // true = gerente, false = funcionário
+        gerente: document.getElementById("cargoFuncionario").value === "gerente"
     };
+
+    if (idFuncionarioEditando && usuarioLogado &&
+        idFuncionarioEditando === usuarioLogado.id_cadastro && !funcionario.gerente) {
+        alert("Você não pode remover o seu próprio cargo de gerente.");
+        return;
+    }
 
     try {
         if (idFuncionarioEditando) {
@@ -543,6 +553,8 @@ function editarFuncionario(id) {
     document.getElementById("cpfFuncionario").value = funcionario.cpf_cnpj || "";
     document.getElementById("emailFuncionario").value = funcionario.email || "";
     document.getElementById("senhaFuncionario").value = "";
+    document.getElementById("cargoFuncionario").value =
+        funcionario.gerente ? "gerente" : "funcionario";
 
     document.getElementById("senhaFuncionario").placeholder =
         "Digite somente se quiser alterar a senha";
@@ -568,6 +580,11 @@ function cancelarEdicaoFuncionario() {
 }
 
 async function excluirFuncionario(id) {
+    if (usuarioLogado && id === usuarioLogado.id_cadastro) {
+        alert("Você não pode excluir o seu próprio usuário.");
+        return;
+    }
+
     if (!confirm("Deseja realmente excluir este funcionário?")) return;
 
     try {
@@ -588,6 +605,11 @@ async function excluirFuncionario(id) {
 // ======================================
 
 async function iniciarSistema() {
+    if (!usuarioLogado || !usuarioLogado.gerente) {
+        alert("Acesso permitido somente para gerentes.");
+        window.location.href = "index.html";
+        return;
+    }
 
     await carregarCategorias();
     await carregarProdutos();

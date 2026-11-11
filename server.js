@@ -7,7 +7,11 @@ const app = express();
 const porta = 3000;
 
 app.use(express.json());
-app.use(express.static(__dirname));
+// Pastas públicas do site
+app.use("/assets", express.static(caminho.join(__dirname, "assets")));
+app.use("/css", express.static(caminho.join(__dirname, "css")));
+app.use("/script", express.static(caminho.join(__dirname, "script")));
+app.use("/html", express.static(caminho.join(__dirname, "html")));
 
 // ======================================
 // BANCO DE DADOS
@@ -33,6 +37,55 @@ pool.getConnection(function(erro, conexao) {
     console.log("Conectado ao banco gestaoestoque!");
     conexao.release();
 });
+
+// Cria as tabelas de estoque e histórico caso ainda não existam
+async function garantirTabelas() {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS estoque (
+                id_estoque INT AUTO_INCREMENT PRIMARY KEY,
+                id_produto INT NOT NULL UNIQUE,
+                nome_item VARCHAR(200),
+                quantidade DECIMAL(10,3) NOT NULL DEFAULT 0,
+                FOREIGN KEY (id_produto)
+                    REFERENCES produto(id_produto)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            )
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS historico_estoque (
+                id_historico INT AUTO_INCREMENT PRIMARY KEY,
+                id_produto INT NULL,
+                nome_produto VARCHAR(200) NOT NULL,
+                acao VARCHAR(100) NOT NULL,
+                id_fornecedor INT,
+                id_cadastro INT NOT NULL,
+                quantidade DECIMAL(10,3) NOT NULL,
+                preco_unitario DECIMAL(10,2) NOT NULL,
+                valor_total DECIMAL(12,2) NOT NULL,
+                data_entrada DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (id_produto)
+                    REFERENCES produto(id_produto)
+                    ON UPDATE CASCADE
+                    ON DELETE SET NULL,
+                FOREIGN KEY (id_fornecedor)
+                    REFERENCES fornecedor(id_fornecedor)
+                    ON DELETE SET NULL,
+                FOREIGN KEY (id_cadastro)
+                    REFERENCES cadastro(id_cadastro)
+            )
+        `);
+
+        console.log("Tabelas de estoque e histórico verificadas.");
+
+    } catch (erro) {
+        console.log("Erro ao verificar tabelas:", erro.message);
+    }
+}
+
+garantirTabelas();
 
 
 // ======================================
@@ -65,13 +118,27 @@ function responderErro(res, erro, mensagemPadrao) {
     }
 
     console.error(erro);
-    res.status(500).json({ mensagem: mensagemPadrao });
+
+    res.status(500).json({
+        mensagem: mensagemPadrao + (erro.sqlMessage ? " (" + erro.sqlMessage + ")" : "")
+    });
 }
 
 // Texto vazio vira null (importante para campos UNIQUE como codigo_barras)
 function textoOuNull(valor) {
     const texto = String(valor ?? "").trim();
     return texto === "" ? null : texto;
+}
+
+// CPF/CNPJ: guarda só os números (a coluna cpf_cnpj tem 14 posições)
+function somenteNumeros(valor) {
+    const numeros = String(valor ?? "").replace(/\D/g, "");
+
+    if (numeros.length > 14) {
+        throw erroHttp(400, "CPF/CNPJ deve ter no máximo 14 números.");
+    }
+
+    return numeros === "" ? null : numeros;
 }
 
 // Busca o fornecedor pelo nome (razão social); se não existir, cria
@@ -157,10 +224,10 @@ app.post("/login", async function(req, res) {
             });
         }
 
-        // Aceita login pelo nome, e-mail ou CPF/CNPJ que já estão no banco
+        // Aceita nome, e-mail ou CPF/CNPJ (com ou sem pontos e traço)
         const [dados] = await db.query(
             "SELECT * FROM cadastro WHERE nome = ? OR email = ? OR cpf_cnpj = ?",
-            [nome, nome, nome]
+            [nome, nome, nome.replace(/\D/g, "") || nome]
         );
 
         let usuario = null;
@@ -207,11 +274,7 @@ app.post("/login", async function(req, res) {
         });
 
     } catch (erro) {
-        console.error(erro);
-
-        res.status(500).json({
-            mensagem: "Erro ao realizar login."
-        });
+        responderErro(res, erro, "Erro ao realizar login.");
     }
 });
 
@@ -614,13 +677,27 @@ app.get("/historico", async function(req, res) {
 // FUNCIONÁRIOS
 // ======================================
 
+// Converte o cargo recebido em true (gerente) ou false (funcionário)
+function ehGerente(valor) {
+    return valor === true || valor === 1 || valor === "1" || valor === "true" || valor === "gerente";
+}
+
+// Verifica se existe algum gerente além do usuário informado
+async function existeOutroGerente(idIgnorar) {
+    const [resultado] = await db.query(
+        "SELECT COUNT(*) AS total FROM cadastro WHERE gerente = TRUE AND id_cadastro <> ?",
+        [idIgnorar]
+    );
+
+    return resultado[0].total > 0;
+}
+
 app.get("/funcionarios", async function(req, res) {
     try {
         const [funcionarios] = await db.query(`
-            SELECT id_cadastro, nome, cpf_cnpj, email
+            SELECT id_cadastro, nome, cpf_cnpj, email, gerente
               FROM cadastro
-             WHERE gerente = FALSE
-             ORDER BY nome
+             ORDER BY gerente DESC, nome
         `);
 
         res.json(funcionarios);
@@ -633,9 +710,10 @@ app.get("/funcionarios", async function(req, res) {
 app.post("/funcionarios", async function(req, res) {
     try {
         const nome = String(req.body.nome ?? "").trim();
-        const cpfCnpj = textoOuNull(req.body.cpf_cnpj);
+        const cpfCnpj = somenteNumeros(req.body.cpf_cnpj);
         const email = textoOuNull(req.body.email);
         const senha = String(req.body.senha ?? "");
+        const gerente = ehGerente(req.body.gerente);
 
         if (!nome || !cpfCnpj) {
             throw erroHttp(400, "Informe o nome e o CPF/CNPJ.");
@@ -649,8 +727,8 @@ app.post("/funcionarios", async function(req, res) {
 
         await db.query(
             `INSERT INTO cadastro (nome, senha, cpf_cnpj, email, gerente)
-             VALUES (?, ?, ?, ?, FALSE)`,
-            [nome, senhaCriptografada, cpfCnpj, email]
+             VALUES (?, ?, ?, ?, ?)`,
+            [nome, senhaCriptografada, cpfCnpj, email, gerente]
         );
 
         res.status(201).json({ mensagem: "Funcionário cadastrado!" });
@@ -667,12 +745,18 @@ app.post("/funcionarios", async function(req, res) {
 app.put("/funcionarios/:id", async function(req, res) {
     try {
         const nome = String(req.body.nome ?? "").trim();
-        const cpfCnpj = textoOuNull(req.body.cpf_cnpj);
+        const cpfCnpj = somenteNumeros(req.body.cpf_cnpj);
         const email = textoOuNull(req.body.email);
         const senha = String(req.body.senha ?? "");
+        const gerente = ehGerente(req.body.gerente);
 
         if (!nome || !cpfCnpj) {
             throw erroHttp(400, "Informe o nome e o CPF/CNPJ.");
+        }
+
+        // Nunca deixa o sistema sem nenhum gerente
+        if (!gerente && !(await existeOutroGerente(req.params.id))) {
+            throw erroHttp(409, "Deve existir pelo menos um gerente no sistema.");
         }
 
         let resultado;
@@ -683,16 +767,16 @@ app.put("/funcionarios/:id", async function(req, res) {
 
             [resultado] = await db.query(
                 `UPDATE cadastro
-                    SET nome = ?, cpf_cnpj = ?, email = ?, senha = ?
-                  WHERE id_cadastro = ? AND gerente = FALSE`,
-                [nome, cpfCnpj, email, senhaCriptografada, req.params.id]
+                    SET nome = ?, cpf_cnpj = ?, email = ?, gerente = ?, senha = ?
+                  WHERE id_cadastro = ?`,
+                [nome, cpfCnpj, email, gerente, senhaCriptografada, req.params.id]
             );
         } else {
             [resultado] = await db.query(
                 `UPDATE cadastro
-                    SET nome = ?, cpf_cnpj = ?, email = ?
-                  WHERE id_cadastro = ? AND gerente = FALSE`,
-                [nome, cpfCnpj, email, req.params.id]
+                    SET nome = ?, cpf_cnpj = ?, email = ?, gerente = ?
+                  WHERE id_cadastro = ?`,
+                [nome, cpfCnpj, email, gerente, req.params.id]
             );
         }
 
@@ -713,8 +797,20 @@ app.put("/funcionarios/:id", async function(req, res) {
 
 app.delete("/funcionarios/:id", async function(req, res) {
     try {
+        // Nunca deixa o sistema sem nenhum gerente
+        if (!(await existeOutroGerente(req.params.id))) {
+            const [alvo] = await db.query(
+                "SELECT gerente FROM cadastro WHERE id_cadastro = ?",
+                [req.params.id]
+            );
+
+            if (alvo.length > 0 && alvo[0].gerente) {
+                throw erroHttp(409, "Deve existir pelo menos um gerente no sistema.");
+            }
+        }
+
         const [resultado] = await db.query(
-            "DELETE FROM cadastro WHERE id_cadastro = ? AND gerente = FALSE",
+            "DELETE FROM cadastro WHERE id_cadastro = ?",
             [req.params.id]
         );
 

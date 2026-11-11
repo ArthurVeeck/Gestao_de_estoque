@@ -14,9 +14,11 @@ formLogin.addEventListener("submit", async function(event) {
 
         const resposta = await fetch("/login", {
             method: "POST",
+
             headers: {
                 "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
                 nome: nome,
                 senha: senha
@@ -30,7 +32,7 @@ formLogin.addEventListener("submit", async function(event) {
             return;
         }
 
-        // Guarda o usuário para o gerente.js / funcionario.js
+        // Guarda o usuário para as telas de gerente e funcionário
         localStorage.setItem("usuarioLogado", JSON.stringify(dados));
 
         if (dados.gerente) {

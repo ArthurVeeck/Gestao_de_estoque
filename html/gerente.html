@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../css/funcionario.css">
-    <link rel="stylesheet" href="../css/gerente.css">
+    <link rel="stylesheet" href="/css/funcionario.css">
+    <link rel="stylesheet" href="/css/gerente.css">
 
     <title>SuperMarket - Gerente</title>
 </head>
@@ -15,7 +15,7 @@
     <!-- MENU LATERAL -->
     <aside class="menu">
 
-        <img src="../assets/LogoSuperMarketEscuro.jpeg" id="logo" alt="SuperMarket">
+        <img src="/assets/Logo.png" id="logo" alt="SuperMarket">
 
         <nav>
             <button class="opcao ativa" data-pagina="produto">Produtos</button>
@@ -355,6 +355,15 @@
                                 placeholder="Senha">
                         </div>
 
+                        <div class="campo">
+                            <label for="cargoFuncionario">Cargo</label>
+                            <select id="cargoFuncionario" required>
+                                <option value="">Selecione o cargo</option>
+                                <option value="funcionario">Funcionário</option>
+                                <option value="gerente">Gerente</option>
+                            </select>
+                        </div>
+
                     </div>
 
                     <div class="botoes">
@@ -390,6 +399,7 @@
                                 <th>Nome</th>
                                 <th>CPF/CNPJ</th>
                                 <th>E-mail</th>
+                                <th>Cargo</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -403,6 +413,6 @@
 
     </main>
 
-    <script src="../script/gerente.js"></script>
+    <script src="/script/gerente.js"></script>
 </body>
 </html>
