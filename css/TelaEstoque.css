@@ -141,14 +141,21 @@ select:focus-visible {
     overflow-y: auto;
 }
 
-/* o mix-blend-mode esconde o fundo preto da imagem PNG */
+/* LOGO: cada tema usa a sua imagem (o tema.js troca o arquivo) */
 #logo {
     display: block;
     width: 150px;
     height: 100px;
     object-fit: contain;
     margin: 0 auto 35px;
+
+    /* modo escuro: o fundo preto da imagem se funde ao menu */
     mix-blend-mode: screen;
+}
+
+/* modo claro: o fundo branco da imagem se funde ao menu branco */
+[data-tema="claro"] #logo {
+    mix-blend-mode: multiply;
 }
 
 .menu nav {

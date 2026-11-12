@@ -27,6 +27,14 @@ function aplicarTema() {
 
     }
 
+    const logo = document.getElementById("logo");
+
+    if (logo) {
+        logo.src = temaAtual === "claro"
+            ? "/assets/LogoClaro.png"
+            : "/assets/Logo.png";
+    }
+
 }
 
 // Alterna entre claro e escuro
