@@ -36,6 +36,34 @@
     color-scheme: dark;
 }
 
+[data-tema="claro"] {
+
+    --fundo: #f1f3f8;
+    --menu: #ffffff;
+    --painel: #ffffff;
+    --campo: #f0f2f8;
+
+    --borda: #d5d9e5;
+    --borda-painel: #e0e4ed;
+
+    --primaria: #3456c5;
+    --primaria-hover: #243c91;
+    --destaque: #4169e1;
+
+    --perigo: #c03939;
+    --perigo-hover: #a52828;
+
+    --texto: #20263a;
+    --texto-suave: #626b80;
+    --texto-fraco: #858da0;
+    --texto-label: #424b61;
+    --texto-tabela: #34446f;
+    --texto-destaque: #3456c5;
+
+    color-scheme: light;
+}
+
+
 
 /* ======================================
    BASE
@@ -407,7 +435,7 @@ td {
 }
 
 tbody tr:hover {
-    background-color: #10152b;
+    background-color: var(--campo);
 }
 
 .mensagem-vazia {
@@ -450,57 +478,125 @@ td button:not(:only-child):last-child:hover {
 }
 
 
-/* ======================================
-   RESPONSIVIDADE
-   ====================================== */
 
+/* ======================================
+   RESPONSIVIDADE - SUPERMARKET
+====================================== */
+
+/* Notebooks e tablets */
 @media (max-width: 850px) {
 
     :root {
-        --largura-menu: 180px;
+        --largura-menu: 200px;
     }
 
     .conteudo {
-        padding: 20px;
+        padding: 25px 20px;
     }
 
     .campos {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-width: 550px) {
-
-    :root {
-        --largura-menu: 110px;
+    .painel {
+        padding: 20px;
     }
 
+    .botoes {
+        flex-wrap: wrap;
+    }
+}
+
+/* Tablets menores e celulares */
+@media (max-width: 650px) {
+
+    body {
+        flex-direction: column;
+    }
+
+    /* Menu passa para o topo */
     .menu {
-        padding: 15px 8px;
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid var(--primaria);
     }
 
     #logo {
-        width: 90px;
-        height: 60px;
-        margin-bottom: 20px;
+        width: 120px;
+        height: 75px;
+        margin: 0 auto 15px;
+    }
+
+    /* Opções do menu */
+    .menu nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
 
     .opcao {
-        padding: 12px 5px;
-        font-size: 12px;
+        width: 100%;
+        padding: 12px 8px;
+        font-size: 13px;
         text-align: center;
     }
 
-    .menu-rodape span {
-        display: none;
+    /* Rodapé do menu */
+    .menu-rodape {
+        margin-top: 15px;
+        padding-top: 12px;
     }
 
+    .menu-rodape span {
+        display: inline;
+    }
+
+    .btn-tema,
+    .btn-sair {
+        width: 100%;
+    }
+
+    /* Conteúdo ocupa toda a tela */
     .conteudo {
-        padding: 15px;
+        width: 100%;
+        min-height: auto;
+        margin-left: 0;
+        padding: 20px 15px;
+    }
+
+    .topo {
+        margin-bottom: 20px;
+    }
+
+    .topo h1 {
+        font-size: 25px;
     }
 
     .painel {
-        padding: 15px;
+        padding: 16px;
+        overflow: hidden;
+    }
+
+    .campos {
+        grid-template-columns: 1fr;
+    }
+
+    .campo {
+        width: 100%;
+    }
+
+    .botoes {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .botoes button {
+        width: 100%;
+        min-width: 0;
     }
 
     .titulo-lista {
@@ -508,11 +604,87 @@ td button:not(:only-child):last-child:hover {
         align-items: flex-start;
     }
 
-    .botoes {
-        flex-direction: column;
+    .titulo-lista > p {
+        white-space: normal;
     }
 
-    .botoes button {
+    /* Tabela com rolagem horizontal */
+    .tabela-container {
         width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
+
+    table {
+        min-width: 600px;
+    }
+}
+
+/* Celulares pequenos */
+@media (max-width: 380px) {
+
+    .menu {
+        padding: 12px 10px;
+    }
+
+    .menu nav {
+        grid-template-columns: 1fr;
+    }
+
+    .opcao {
+        padding: 11px;
+        font-size: 13px;
+    }
+
+    .conteudo {
+        padding: 15px 10px;
+    }
+
+    .topo h1 {
+        font-size: 21px;
+    }
+
+    .painel {
+        padding: 12px;
+    }
+
+    .painel h2 {
+        font-size: 17px;
+    }
+
+    .btn-tema,
+    .btn-sair {
+        font-size: 12px;
+    }
+}
+
+
+
+/* ======================================
+   BOTÃO DE ALTERNAR TEMA
+   ====================================== */
+
+.btn-tema {
+    width: 100%;
+    margin-top: 12px;
+    padding: 11px;
+
+    background-color: var(--campo);
+    color: var(--texto);
+
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-tema:hover {
+    background-color: var(--primaria);
+    color: #ffffff;
+    border-color: var(--primaria);
 }
